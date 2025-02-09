@@ -10,7 +10,7 @@ const visualRange = 40
 const protectedRange = 8
 const centeringfactor = 0.0005
 const avoidfactor = 0.05
-const matchingfactor = 0.05
+const sociability = 0.05
 const maxspeed = 6
 const minspeed = 3
 // Main script -----------------
@@ -97,8 +97,14 @@ function updateAlignement() {
             xvelAvg += boid2.vx
             yvelAvg += boid2.vy
             neighbours += 1
+        })
+
+        if (neighbours > 0) {
+            xvelAvg /= neighbours
+            yvelAvg /= neighbours
         }
-        )
+        boid1.vx = (xvelAvg - boid1.vx) * sociability
+        boid1.vy = (yvelAvg - boid1.vy) * sociability
     })
 }
 function seeEachother(boid1, boid2) {
