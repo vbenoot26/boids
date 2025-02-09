@@ -3,13 +3,13 @@ const canvas = document.getElementById("canvas")
 const context = canvas.getContext("2d")
 let raf
 // Constants --------------------
-const boidsAmount = 100
+const boidsAmount = 1000
 // It seems the most fun to let everything start at the same speed.
 const startVelocity = 4
 const boids = createBoids()
 
 const shyness = 0.05
-const turnfactor = 0.2
+const turnfactor = 0.5
 const visualRange = 40
 const protectedRange = 8
 const centeringfactor = 0.0005
@@ -17,6 +17,7 @@ const avoidfactor = 0.05
 const matchingfactor = 0.05
 const maxspeed = 6
 const minspeed = 3
+const margin = 20
 // Main script -----------------
 
 function draw() {
@@ -40,11 +41,11 @@ function update() {
     updateAlignement()
 
     updateSpeeds()
+    steerFromEdges()
 
     boids.forEach(b => {
-        b.x = (b.x + b.vx) % canvas.width
-        b.y = (b.y + b.vy) % canvas.height
-        console.log(b)
+        b.x = b.x + b.vx
+        b.y = b.y + b.vy
     })
 
 }
@@ -77,58 +78,58 @@ function createBoids() {
 }
 
 function updateSeperation() {
-    boids.forEach(boid1 => {
+    boids.forEach(b1 => {
         let closedx = 0
         let closedy = 0
-        boids.filter(tooClose).forEach(boid2 => {
-            if (boid2 == boid1) return
-            closedx += boid1.x - boid2.x
-            closedy += boid1.y - boid2.y
+        boids.filter(b2 => tooClose(b1, b2)).forEach(b2 => {
+            if (b2 == b1) return
+            closedx += b1.x - b2.x
+            closedy += b1.y - b2.y
         })
-        boid1.vx += closedx * shyness
-        boid1.vy += closedy * shyness
+        b1.vx += closedx * shyness
+        b1.vy += closedy * shyness
     })
 }
 
 function updateAlignement() {
-    boids.forEach(boid1 => {
+    boids.forEach(b1 => {
         let xvelAvg = 0
         let yvelAvg = 0
         let neighbours = 0
-        boids.filter(seeEachother).forEach(boid2 => {
-            if (boid2 == boid1) return
-            xvelAvg += boid2.vx
-            yvelAvg += boid2.vy
+        boids.filter(b2 => seeEachother(b1, b2)).forEach(b2 => {
+            if (b2 == b1) return
+            xvelAvg += b2.vx
+            yvelAvg += b2.vy
             neighbours++
         })
 
-        if (neighbours > 0) {
-            xvelAvg /= neighbours
-            yvelAvg /= neighbours
-        }
-        boid1.vx = (xvelAvg - boid1.vx) * matchingfactor
-        boid1.vy = (yvelAvg - boid1.vy) * matchingfactor
+        if (neighbours === 0) return
+        xvelAvg /= neighbours
+        yvelAvg /= neighbours
+
+        b1.vx += (xvelAvg - b1.vx) * matchingfactor
+        b1.vy += (yvelAvg - b1.vy) * matchingfactor
     })
 }
 
 function updateCohesion() {
-    boids.forEach(boid1 => {
+    boids.forEach(b1 => {
         let xposAvg = 0
         let yposAvg = 0
         let neighbours = 0
-        boids.filter(seeEachother).forEach(boid2 => {
-            if (boid1 == boid2) return
-            xposAvg += boid2.vx
-            yposAvg += boid2.vy
+        boids.filter(b2 => seeEachother(b1, b2)).forEach(b2 => {
+            if (b1 == b2) return
+            xposAvg += b2.vx
+            yposAvg += b2.vy
             neighbours++
         })
 
-        if (neighbours > 0) {
-            xposAvg /= neighbours
-            yposAvg /= neighbours
-        }
-        boid1.vx = (xposAvg - boid1.x) * centeringfactor
-        boid1.vy = (yposAvg - boid1.y) * centeringfactor
+        if (neighbours === 0) return
+        xposAvg /= neighbours
+        yposAvg /= neighbours
+
+        b1.vx += (xposAvg - b1.x) * centeringfactor
+        b1.vy += (yposAvg - b1.y) * centeringfactor
     })
 }
 
@@ -147,6 +148,24 @@ function updateSpeeds() {
             boid.vy = (boid.vy / speed) * minspeed
         }
 
+    })
+}
+
+function steerFromEdges() {
+    boids.forEach(b => {
+        if (b.x < margin) {
+            b.vx += turnfactor
+        }
+        if (b.y < margin) {
+            b.vy += turnfactor
+        }
+        if (b.x > canvas.width - margin) {
+            b.vx -= turnfactor
+            console.log(b.vx)
+        }
+        if (b.y > canvas.height - margin) {
+            b.vy -= turnfactor
+        }
     })
 }
 
