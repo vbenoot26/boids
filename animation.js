@@ -83,9 +83,24 @@ function updateSeperation() {
             closedx += boid1.x - boid2.x
             closedy += boid1.y - boid2.y
         })
+        boid1.vx += closedx * shyness
+        boid1.vy += closedy * shyness
     })
 }
 
+function updateAlignement() {
+    boids.forEach(boid1 => {
+        let xvelAvg = 0
+        let yvelAvg = 0
+        let neighbours = 0
+        boids.filter(seeEachother).forEach(boid2 => {
+            xvelAvg += boid2.vx
+            yvelAvg += boid2.vy
+            neighbours += 1
+        }
+        )
+    })
+}
 function seeEachother(boid1, boid2) {
     return distance(boid1.x, boid1.y, boid2.x, boid2.y) < visualRange
 }
