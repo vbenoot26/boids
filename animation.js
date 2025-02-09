@@ -1,3 +1,8 @@
+// Constants --------------------
+const boidsAmount = 100
+const standardVelocity = 5.0
+const boids = createBoids()
+// Main script -----------------
 const canvas = document.getElementById("canvas")
 const context = canvas.getContext("2d")
 let raf
@@ -5,12 +10,12 @@ let raf
 const ball = {
     x: 100,
     y: 100,
-    vx: 10,
-    vy: 10,
+    vx: 3,
+    vy: 2,
     color: "blue",
     draw() {
         context.beginPath();
-        context.arc(this.x, this.y, 25, 0, Math.PI * 2, true);
+        context.arc(this.x, this.y, 2, 0, Math.PI * 2, true);
         context.closePath();
         context.fillStyle = this.color;
         context.fill();
@@ -37,3 +42,24 @@ canvas.addEventListener("mouseout", (e) => {
 });
 
 ball.draw();
+
+// BOIDS
+function createBoids() {
+    const result = []
+    for (let i = 0; i < boidsAmount; i++) {
+        const x = Math.random() * canvas.width
+        const y = Math.random() * canvas.height
+
+        const vx = Math.random() * standardVelocity;
+        const vy = Math.sqrt(vx ** 2 - standardVelocity ** 2)
+
+        result.push({
+            x: x,
+            y: y,
+            vx: vx,
+            vy: vy
+        })
+    }
+
+    return result
+}
