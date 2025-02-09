@@ -1,7 +1,18 @@
 // Constants --------------------
 const boidsAmount = 100
-const standardVelocity = 5.0
+// It seems the most fun to let everything start at the same speed.
+const startVelocity = 5.0
 const boids = createBoids()
+
+const shyness = 0.05
+const turnfactor = 0.2
+const visualRange = 40
+const protectedRange = 8
+const centeringfactor = 0.0005
+const avoidfactor = 0.05
+const matchingfactor = 0.05
+const maxspeed = 6
+const minspeed = 3
 // Main script -----------------
 const canvas = document.getElementById("canvas")
 const context = canvas.getContext("2d")
@@ -50,8 +61,8 @@ function createBoids() {
         const x = Math.random() * canvas.width
         const y = Math.random() * canvas.height
 
-        const vx = Math.random() * standardVelocity;
-        const vy = Math.sqrt(vx ** 2 - standardVelocity ** 2)
+        const vx = Math.random() * startVelocity;
+        const vy = Math.sqrt(vx ** 2 - startVelocity ** 2)
 
         result.push({
             x: x,
@@ -62,4 +73,27 @@ function createBoids() {
     }
 
     return result
+}
+
+function updateSeperation() {
+    boids.forEach(boid1 => {
+        let closedx = 0
+        let closedy = 0
+        boids.filter(tooClose).forEach(boid2 => {
+            closedx += boid1.x - boid2.x
+            closedy += boid1.y - boid2.y
+        })
+    })
+}
+
+function seeEachother(boid1, boid2) {
+    return distance(boid1.x, boid1.y, boid2.x, boid2.y) < visualRange
+}
+
+function tooClose(boid1, boid2) {
+    return distance(boid1.x, boid1.y, boid2.x, boid2.y) < protectedRange
+}
+
+function distance(x1, y1, x2, y2) {
+    return Math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 }
