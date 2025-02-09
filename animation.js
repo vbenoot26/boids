@@ -2,12 +2,17 @@
 const canvas = document.getElementById("canvas")
 const context = canvas.getContext("2d")
 let raf
+
+let mousex
+let mousey
+let mousein = false
 // Constants --------------------
 const boidsAmount = 1000
 // It seems the most fun to let everything start at the same speed.
 const startVelocity = 4
 const boids = createBoids()
 
+const fleeingFactor = 1
 const shyness = 0.05
 const turnfactor = 0.5
 const visualRange = 40
@@ -42,6 +47,7 @@ function update() {
 
     updateSpeeds()
     steerFromEdges()
+    flee()
 
     boids.forEach(b => {
         b.x = b.x + b.vx
@@ -50,7 +56,22 @@ function update() {
 
 }
 
-canvas.addEventListener("load", (e) => {
+// LISTENERS --------------------
+
+canvas.addEventListener("mousemove", (event) => {
+    mousex = event.clientX
+    mousey = event.clientY
+})
+
+canvas.addEventListener("mouseenter", () => {
+    mousein = true
+})
+
+canvas.addEventListener("mouseleave", () => {
+    mousein = false
+})
+
+canvas.addEventListener("load", () => {
     raf = window.requestAnimationFrame(draw);
 });
 
@@ -165,6 +186,17 @@ function steerFromEdges() {
         }
         if (b.y > canvas.height - margin) {
             b.vy -= turnfactor
+        }
+    })
+}
+
+function flee() {
+    boids.forEach(b => {
+        if (distance(b.x, b.y, mousex, mousey) < visualRange) {
+            if (b.x < mousex) b.vx -= fleeingFactor
+            if (b.x > mousex) b.vx += fleeingFactor
+            if (b.y < mousey) b.vy -= fleeingFactor
+            if (b.y > mousey) b.vy += fleeingFactor
         }
     })
 }
