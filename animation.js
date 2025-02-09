@@ -10,7 +10,7 @@ const visualRange = 40
 const protectedRange = 8
 const centeringfactor = 0.0005
 const avoidfactor = 0.05
-const sociability = 0.05
+const matchingfactor = 0.05
 const maxspeed = 6
 const minspeed = 3
 // Main script -----------------
@@ -80,6 +80,7 @@ function updateSeperation() {
         let closedx = 0
         let closedy = 0
         boids.filter(tooClose).forEach(boid2 => {
+            if (boid2 == boid1) return
             closedx += boid1.x - boid2.x
             closedy += boid1.y - boid2.y
         })
@@ -94,6 +95,7 @@ function updateAlignement() {
         let yvelAvg = 0
         let neighbours = 0
         boids.filter(seeEachother).forEach(boid2 => {
+            if (boid2 == boid1) return
             xvelAvg += boid2.vx
             yvelAvg += boid2.vy
             neighbours += 1
@@ -103,8 +105,14 @@ function updateAlignement() {
             xvelAvg /= neighbours
             yvelAvg /= neighbours
         }
-        boid1.vx = (xvelAvg - boid1.vx) * sociability
-        boid1.vy = (yvelAvg - boid1.vy) * sociability
+        boid1.vx = (xvelAvg - boid1.vx) * matchingfactor
+        boid1.vy = (yvelAvg - boid1.vy) * matchingfactor
+    })
+}
+
+function updateCohesion() {
+    boids.forEach(boid1 => {
+
     })
 }
 function seeEachother(boid1, boid2) {
