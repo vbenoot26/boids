@@ -98,7 +98,7 @@ function updateAlignement() {
             if (boid2 == boid1) return
             xvelAvg += boid2.vx
             yvelAvg += boid2.vy
-            neighbours += 1
+            neighbours++
         })
 
         if (neighbours > 0) {
@@ -112,7 +112,22 @@ function updateAlignement() {
 
 function updateCohesion() {
     boids.forEach(boid1 => {
+        let xposAvg = 0
+        let yposAvg = 0
+        let neighbours = 0
+        boids.filter(seeEachother).forEach(boid2 => {
+            if (boid1 == boid2) return
+            xposAvg += boid2.vx
+            yposAvg += boid2.vy
+            neighbours++
+        })
 
+        if (neighbours > 0) {
+            xposAvg /= neighbours
+            yposAvg /= neighbours
+        }
+        boid1.vx = (xposAvg - boid1.x) * centeringfactor
+        boid1.vy = (yposAvg - boid1.y) * centeringfactor
     })
 }
 function seeEachother(boid1, boid2) {
