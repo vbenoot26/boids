@@ -10,8 +10,8 @@ let mousein = false
 const boidsAmount = 1000
 // It seems the most fuvn to let everything start at the same speed.
 const startVelocity = 4
-let boids = createBoids()
-let boidsCopy;
+let boids
+let boidsCopy
 
 const fleeingFactor = 1
 const shyness = 0.05
@@ -25,6 +25,10 @@ const maxspeed = 20
 const minspeed = 3
 const margin = 20
 // Main script -----------------
+// INIT
+resizeCanvas()
+window.addEventListener("resize", resizeCanvas)
+boids = createBoids()
 
 function draw() {
     context.clearRect(0, 0, canvas.width, canvas.height)
@@ -86,8 +90,6 @@ function resizeCanvas() {
 }
 
 draw();
-resizeCanvas()
-window.addEventListener("resize", resizeCanvas)
 
 // BOIDS ------------------------
 function createBoids() {
@@ -96,8 +98,8 @@ function createBoids() {
         const x = Math.random() * canvas.width
         const y = Math.random() * canvas.height
 
-        const vx = Math.random() * startVelocity;
-        const vy = Math.sqrt(Math.abs((vx ** 2) - (startVelocity ** 2)))
+        const vx = 0
+        const vy = 0
 
         result.push({
             x: x,
