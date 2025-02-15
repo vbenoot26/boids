@@ -10,7 +10,8 @@ let mousein = false
 const boidsAmount = 2
 // It seems the most fun to let everything start at the same speed.
 const startVelocity = 4
-const boids = createBoids()
+let boids = createBoids()
+let boidsCopy;
 
 const fleeingFactor = 1
 const shyness = 0.05
@@ -41,6 +42,8 @@ function drawBoid(boid) {
 }
 
 function update() {
+    boidsCopy = structuredClone(boids)
+
     updateSeperation()
     updateCohesion()
     updateAlignement()
@@ -49,10 +52,12 @@ function update() {
     steerFromEdges()
     flee()
 
-    boids.forEach(b => {
+    boidsCopy.forEach(b => {
         b.x = b.x + b.vx
         b.y = b.y + b.vy
     })
+
+    boids = structuredClone(boidsCopy)
 
 }
 
@@ -99,7 +104,7 @@ function createBoids() {
 }
 
 function updateSeperation() {
-    boids.forEach(b1 => {
+    boids.forEach((b1, index) => {
         let closedx = 0
         let closedy = 0
         boids.filter(b2 => tooClose(b1, b2)).forEach(b2 => {
@@ -107,13 +112,13 @@ function updateSeperation() {
             closedx += b1.x - b2.x
             closedy += b1.y - b2.y
         })
-        b1.vx += closedx * shyness
-        b1.vy += closedy * shyness
+        boidsCopy[index].vx += closedx * shyness
+        boidsCopy[index].vy += closedy * shyness
     })
 }
 
 function updateAlignement() {
-    boids.forEach(b1 => {
+    boids.forEach((b1, index) => {
         let xvelAvg = 0
         let yvelAvg = 0
         let neighbours = 0
@@ -128,13 +133,13 @@ function updateAlignement() {
         xvelAvg /= neighbours
         yvelAvg /= neighbours
 
-        b1.vx += (xvelAvg - b1.vx) * matchingfactor
-        b1.vy += (yvelAvg - b1.vy) * matchingfactor
+        boidsCopy[index].vx += (xvelAvg - b1.vx) * matchingfactor
+        boidsCopy[index].vy += (yvelAvg - b1.vy) * matchingfactor
     })
 }
 
 function updateCohesion() {
-    boids.forEach(b1 => {
+    boids.forEach((b1, index) => {
         let xposAvg = 0
         let yposAvg = 0
         let neighbours = 0
@@ -149,8 +154,8 @@ function updateCohesion() {
         xposAvg /= neighbours
         yposAvg /= neighbours
 
-        b1.vx += (xposAvg - b1.x) * centeringfactor
-        b1.vy += (yposAvg - b1.y) * centeringfactor
+        boidsCopy[index].vx += (xposAvg - b1.x) * centeringfactor
+        boidsCopy[index].vy += (yposAvg - b1.y) * centeringfactor
     })
 }
 
@@ -158,7 +163,7 @@ function updateCohesion() {
 * Keeps the speeds within the boundaries
 */
 function updateSpeeds() {
-    boids.forEach(boid => {
+    boidsCopy.forEach(boid => {
         let speed = Math.sqrt(boid.vx ** 2 + boid.vy ** 2)
         if (speed > maxspeed) {
             boid.vx = (boid.vx / speed) * maxspeed
@@ -173,7 +178,7 @@ function updateSpeeds() {
 }
 
 function steerFromEdges() {
-    boids.forEach(b => {
+    boidsCopy.forEach(b => {
         if (b.x < margin) {
             b.vx += turnfactor
         }
@@ -191,7 +196,7 @@ function steerFromEdges() {
 }
 
 function flee() {
-    boids.forEach(b => {
+    boidsCopy.forEach(b => {
         if (distance(b.x, b.y, mousex, mousey) < visualRange) {
             if (b.x < mousex) b.vx -= fleeingFactor
             if (b.x > mousex) b.vx += fleeingFactor
