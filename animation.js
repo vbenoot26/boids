@@ -7,7 +7,7 @@ let mousex
 let mousey
 let mousein = false
 // Constants --------------------
-const boidsAmount = 1000
+const boidsAmount = 2
 // It seems the most fun to let everything start at the same speed.
 const startVelocity = 4
 const boids = createBoids()
@@ -22,7 +22,7 @@ const avoidfactor = 0.05
 const matchingfactor = 0.05
 const maxspeed = 6
 const minspeed = 3
-const margin = 20
+const margin = 5
 // Main script -----------------
 
 function draw() {
