@@ -7,8 +7,8 @@ let mousex
 let mousey
 let mousein = false
 // Constants --------------------
-const boidsAmount = 2
-// It seems the most fun to let everything start at the same speed.
+const boidsAmount = 1000
+// It seems the most fuvn to let everything start at the same speed.
 const startVelocity = 4
 let boids = createBoids()
 let boidsCopy;
@@ -21,9 +21,9 @@ const protectedRange = 8
 const centeringfactor = 0.0005
 const avoidfactor = 0.05
 const matchingfactor = 0.05
-const maxspeed = 6
+const maxspeed = 20
 const minspeed = 3
-const margin = 5
+const margin = 20
 // Main script -----------------
 
 function draw() {
@@ -80,7 +80,14 @@ canvas.addEventListener("load", () => {
     raf = window.requestAnimationFrame(draw);
 });
 
+function resizeCanvas() {
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+}
+
 draw();
+resizeCanvas()
+window.addEventListener("resize", resizeCanvas)
 
 // BOIDS ------------------------
 function createBoids() {
@@ -145,8 +152,8 @@ function updateCohesion() {
         let neighbours = 0
         boids.filter(b2 => seeEachother(b1, b2)).forEach(b2 => {
             if (b1 == b2) return
-            xposAvg += b2.vx
-            yposAvg += b2.vy
+            xposAvg += b2.x
+            yposAvg += b2.y
             neighbours++
         })
 
